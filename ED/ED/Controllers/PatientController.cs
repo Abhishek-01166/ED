@@ -1,0 +1,42 @@
+using ED.Data;
+using ED.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace ED.Controllers;
+
+[Authorize]
+public class PatientController(ApplicationDbContext dbContext) : Controller
+{
+    [HttpGet]
+    public async Task<IActionResult> Search(string? searchTerm)
+    {
+        var query = dbContext.Patients.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.Trim();
+            query = query.Where(p =>
+                p.PatientCode.Contains(term) ||
+                p.FirstName.Contains(term) ||
+                p.LastName.Contains(term) ||
+                (p.FirstName + " " + p.LastName).Contains(term) ||
+                p.PhoneNumber.Contains(term) ||
+                p.Email.Contains(term));
+        }
+
+        var results = await query
+            .OrderByDescending(p => p.LastVisitDate)
+            .Take(string.IsNullOrWhiteSpace(searchTerm) ? 10 : 100)
+            .ToListAsync();
+
+        var model = new PatientSearchViewModel
+        {
+            SearchTerm = searchTerm,
+            Results = results
+        };
+
+        return View(model);
+    }
+}
