@@ -1,0 +1,79 @@
+@model ED.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Total Patients</p>
+                <h3>@Model.TotalPatients</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Visited Today</p>
+                <h3>@Model.PatientsVisitedToday</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Visited This Week</p>
+                <h3>@Model.PatientsVisitedThisWeek</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <p class="text-muted mb-1">Recent (30 Days)</p>
+                <h3>@Model.RecentPatientCount</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h2 class="h5 mb-0">5 Most Recent Visits</h2>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.RecentVisits.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Patient Code</th>
+                            <th>Full Name</th>
+                            <th>Phone</th>
+                            <th>Last Visit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patient in Model.RecentVisits)
+                        {
+                            <tr>
+                                <td>@patient.PatientCode</td>
+                                <td>@patient.FullName</td>
+                                <td>@patient.PhoneNumber</td>
+                                <td>@patient.LastVisitDate.ToString("yyyy-MM-dd")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="p-3 mb-0 text-muted">No patient data available.</p>
+        }
+    </div>
+</div>
